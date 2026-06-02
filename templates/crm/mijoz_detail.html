@@ -1,0 +1,68 @@
+{% extends 'crm/base.html' %}
+{% block title %}{{ mijoz }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <a href="{% url 'crm:mijozlar' %}" class="text-muted small text-decoration-none"><i class="fas fa-arrow-left me-1"></i>Mijozlar</a>
+        <h4 class="mb-0 mt-1">{{ mijoz }}</h4>
+    </div>
+    <div>
+        <a href="{% url 'crm:mijoz_tahrirlash' mijoz.pk %}" class="btn btn-outline-primary me-2"><i class="fas fa-edit me-1"></i>Tahrirlash</a>
+        <a href="{% url 'crm:mijoz_ochirish' mijoz.pk %}" class="btn btn-outline-danger"><i class="fas fa-trash me-1"></i>O'chirish</a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card p-4 text-center mb-3">
+            <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center mx-auto mb-3" style="width:70px;height:70px;font-size:1.8rem;font-weight:700">
+                {{ mijoz.ism|first }}{{ mijoz.familiya|first }}
+            </div>
+            <h5 class="mb-1">{{ mijoz }}</h5>
+            <p class="text-muted small mb-3">{{ mijoz.qoshilgan_sana|date:"d.m.Y" }} dan beri mijoz</p>
+            <div class="d-flex justify-content-around text-center">
+                <div><div class="fw-bold fs-5">{{ mijoz.tashriflar_soni }}</div><small class="text-muted">Tashrif</small></div>
+                <div><div class="fw-bold fs-5">{{ muloqotlar|length }}</div><small class="text-muted">Muloqot</small></div>
+            </div>
+        </div>
+        <div class="card p-3">
+            <h6 class="mb-3">Aloqa ma'lumotlari</h6>
+            {% if mijoz.telefon %}<p class="mb-2"><i class="fas fa-phone text-success me-2"></i>{{ mijoz.telefon }}</p>{% endif %}
+            {% if mijoz.email %}<p class="mb-2"><i class="fas fa-envelope text-primary me-2"></i>{{ mijoz.email }}</p>{% endif %}
+            {% if mijoz.tugilgan_kun %}<p class="mb-2"><i class="fas fa-birthday-cake text-warning me-2"></i>{{ mijoz.tugilgan_kun|date:"d.m.Y" }}</p>{% endif %}
+            {% if mijoz.manzil %}<p class="mb-2"><i class="fas fa-map-marker-alt text-danger me-2"></i>{{ mijoz.manzil }}</p>{% endif %}
+            {% if mijoz.izoh %}<p class="mb-0 text-muted small"><i class="fas fa-sticky-note me-2"></i>{{ mijoz.izoh }}</p>{% endif %}
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0">Muloqotlar tarixi</h6>
+            </div>
+            <form method="post" action="{% url 'crm:muloqot_qoshish' mijoz.pk %}" class="mb-4 p-3 bg-light rounded">
+                {% csrf_token %}
+                <div class="row g-2">
+                    <div class="col-md-4">{{ muloqot_form.tur }}</div>
+                    <div class="col-md-8">{{ muloqot_form.izoh }}</div>
+                </div>
+                <button type="submit" class="btn btn-sm btn-brown mt-2"><i class="fas fa-plus me-1"></i>Muloqot qo'shish</button>
+            </form>
+            {% for mul in muloqotlar %}
+            <div class="d-flex py-2 border-bottom">
+                <div class="me-3 text-center" style="min-width:50px">
+                    <small class="text-muted">{{ mul.sana|date:"d.m" }}</small><br>
+                    <small class="text-muted">{{ mul.sana|date:"H:i" }}</small>
+                </div>
+                <div>
+                    <span class="badge badge-{{ mul.tur }} mb-1">{{ mul.get_tur_display }}</span>
+                    <div>{{ mul.izoh }}</div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted text-center py-3">Hali muloqot yo'q</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

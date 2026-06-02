@@ -1,0 +1,32 @@
+{% extends 'erp/base.html' %}
+{% block title %}Xodimlar{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+    <h4 class="mb-0">Xodimlar</h4>
+    <a href="{% url 'erp:xodim_yaratish' %}" class="btn btn-brown"><i class="fas fa-plus me-1"></i>Yangi xodim</a>
+</div>
+<div class="row g-3">
+    {% for x in xodimlar %}
+    <div class="col-md-4">
+        <div class="card p-3">
+            <div class="d-flex align-items-center mb-3">
+                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width:48px;height:48px;font-size:1.2rem;font-weight:700">
+                    {{ x.ism|first }}{{ x.familiya|first }}
+                </div>
+                <div>
+                    <div class="fw-semibold">{{ x }}</div>
+                    <span class="badge bg-secondary">{{ x.get_lavozim_display }}</span>
+                </div>
+            </div>
+            {% if x.telefon %}<p class="mb-1 small"><i class="fas fa-phone text-success me-2"></i>{{ x.telefon }}</p>{% endif %}
+            {% if x.email %}<p class="mb-1 small"><i class="fas fa-envelope text-primary me-2"></i>{{ x.email }}</p>{% endif %}
+            <p class="mb-2 small"><i class="fas fa-money-bill text-warning me-2"></i>{{ x.maosh|floatformat:0 }} so'm</p>
+            <p class="mb-3 small text-muted"><i class="fas fa-calendar me-2"></i>{{ x.ishga_kirgan|date:"d.m.Y" }} dan beri</p>
+            <a href="{% url 'erp:xodim_tahrirlash' x.pk %}" class="btn btn-sm btn-outline-primary w-100">Tahrirlash</a>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12"><p class="text-muted text-center">Xodim yo'q</p></div>
+    {% endfor %}
+</div>
+{% endblock %}

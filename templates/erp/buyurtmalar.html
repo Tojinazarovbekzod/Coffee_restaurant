@@ -1,0 +1,44 @@
+{% extends 'erp/base.html' %}
+{% block title %}Buyurtmalar{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+    <h4 class="mb-0">Buyurtmalar</h4>
+    <a href="{% url 'erp:buyurtma_yaratish' %}" class="btn btn-brown"><i class="fas fa-plus me-1"></i>Yangi buyurtma</a>
+</div>
+<div class="card p-3 mb-3">
+    <form method="get" class="d-flex gap-2 flex-wrap">
+        {% for holat_kod, holat_nom in holat_turlari %}
+        <a href="?holat={{ holat_kod }}" class="btn btn-sm {% if holat == holat_kod %}btn-brown{% else %}btn-outline-secondary{% endif %}">{{ holat_nom }}</a>
+        {% endfor %}
+        <a href="?" class="btn btn-sm {% if not holat %}btn-brown{% else %}btn-outline-secondary{% endif %}">Barchasi</a>
+    </form>
+</div>
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr><th>#</th><th>Mijoz</th><th>Sana</th><th>Holat</th><th>Jami summa</th><th></th></tr>
+            </thead>
+            <tbody>
+                {% for b in buyurtmalar %}
+                <tr>
+                    <td class="text-muted">{{ b.pk }}</td>
+                    <td class="fw-semibold">{{ b.mijoz_ism }}</td>
+                    <td class="text-muted small">{{ b.sana|date:"d.m.Y H:i" }}</td>
+                    <td>
+                        {% if b.holat == 'yangi' %}<span class="badge bg-primary">Yangi</span>
+                        {% elif b.holat == 'jarayonda' %}<span class="badge bg-warning text-dark">Jarayonda</span>
+                        {% elif b.holat == 'bajarildi' %}<span class="badge bg-success">Bajarildi</span>
+                        {% else %}<span class="badge bg-danger">Bekor</span>{% endif %}
+                    </td>
+                    <td>{{ b.jami_summa|floatformat:0 }} so'm</td>
+                    <td><a href="{% url 'erp:buyurtma_detail' b.pk %}" class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></a></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="text-center text-muted py-4">Buyurtma yo'q</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

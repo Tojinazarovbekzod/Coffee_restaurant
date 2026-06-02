@@ -1,0 +1,102 @@
+{% extends 'erp/base.html' %}
+{% block title %}ERP Boshqaruv paneli{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h4 class="mb-1">ERP Boshqaruv paneli</h4>
+    <p class="text-muted mb-0">Biznes resurslarini boshqarish</p>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card" style="background:linear-gradient(135deg,#8b4513,#c07040)">
+            <div class="fs-2 fw-bold">{{ jami_mahsulotlar }}</div>
+            <div class="opacity-75">Mahsulotlar</div>
+            {% if kam_qolgan %}<small class="opacity-75"><i class="fas fa-exclamation-triangle"></i> {{ kam_qolgan|length }} ta kam qolgan</small>{% endif %}
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background:linear-gradient(135deg,#0d6efd,#3d8bfd)">
+            <div class="fs-2 fw-bold">{{ jami_buyurtmalar }}</div>
+            <div class="opacity-75">Buyurtmalar</div>
+            <small class="opacity-75">{{ yangi_buyurtmalar }} ta yangi</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background:linear-gradient(135deg,#6610f2,#9d4edd)">
+            <div class="fs-2 fw-bold">{{ jami_xodimlar }}</div>
+            <div class="opacity-75">Faol xodimlar</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background:linear-gradient(135deg,{% if foyda >= 0 %}#198754,#28a745{% else %}#dc3545,#e05260{% endif %})">
+            <div class="fs-2 fw-bold">{{ foyda|floatformat:0 }}</div>
+            <div class="opacity-75">Foyda (so'm)</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-md-4">
+        <div class="card p-3 text-center">
+            <div class="text-success fw-bold fs-5">+{{ daromad|floatformat:0 }} so'm</div>
+            <small class="text-muted">Jami daromad</small>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3 text-center">
+            <div class="text-danger fw-bold fs-5">-{{ xarajat|floatformat:0 }} so'm</div>
+            <small class="text-muted">Jami xarajat</small>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3 text-center">
+            <div class="fw-bold fs-5 {% if foyda >= 0 %}text-success{% else %}text-danger{% endif %}">{{ foyda|floatformat:0 }} so'm</div>
+            <small class="text-muted">Sof foyda</small>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0"><i class="fas fa-receipt text-primary me-2"></i>Oxirgi buyurtmalar</h6>
+                <a href="{% url 'erp:buyurtmalar' %}" class="btn btn-sm btn-brown">Barchasi</a>
+            </div>
+            {% for b in oxirgi_buyurtmalar %}
+            <div class="d-flex align-items-center py-2 border-bottom">
+                <div class="flex-grow-1">
+                    <a href="{% url 'erp:buyurtma_detail' b.pk %}" class="fw-semibold text-decoration-none text-dark">#{{ b.pk }} - {{ b.mijoz_ism }}</a>
+                    <div class="text-muted small">{{ b.sana|date:"d.m.Y H:i" }}</div>
+                </div>
+                {% if b.holat == 'yangi' %}<span class="badge bg-primary">Yangi</span>
+                {% elif b.holat == 'jarayonda' %}<span class="badge bg-warning text-dark">Jarayonda</span>
+                {% elif b.holat == 'bajarildi' %}<span class="badge bg-success">Bajarildi</span>
+                {% else %}<span class="badge bg-danger">Bekor</span>{% endif %}
+            </div>
+            {% empty %}
+            <p class="text-muted">Buyurtma yo'q</p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0"><i class="fas fa-exclamation-triangle text-warning me-2"></i>Kam qolgan mahsulotlar</h6>
+                <a href="{% url 'erp:mahsulotlar' %}" class="btn btn-sm btn-brown">Inventar</a>
+            </div>
+            {% for m in kam_qolgan %}
+            <div class="d-flex align-items-center py-2 border-bottom">
+                <div class="flex-grow-1">
+                    <span class="fw-semibold">{{ m.nom }}</span>
+                    <div class="text-muted small">Minimal: {{ m.minimal_miqdor }} {{ m.birlik }}</div>
+                </div>
+                <span class="badge bg-danger">{{ m.miqdor }} {{ m.birlik }}</span>
+            </div>
+            {% empty %}
+            <p class="text-success"><i class="fas fa-check-circle me-2"></i>Barcha mahsulotlar yetarli</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

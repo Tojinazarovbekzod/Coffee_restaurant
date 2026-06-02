@@ -1,0 +1,15 @@
+{% extends 'erp/base.html' %}
+{% block title %}O'chirishni tasdiqlash{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h4>O'chirishni tasdiqlash</h4>
+</div>
+<div class="card p-4" style="max-width:500px">
+    <p class="mb-4"><strong>{{ obyekt }}</strong> ni o'chirmoqchimisiz? Bu amalni qaytarib bo'lmaydi.</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger me-2"><i class="fas fa-trash me-1"></i>Ha, o'chirish</button>
+        <a href="javascript:history.back()" class="btn btn-outline-secondary">Bekor qilish</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'crm/base.html' %}
+{% block title %}Mijozlar{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+    <h4 class="mb-0">Mijozlar ro'yxati</h4>
+    <a href="{% url 'crm:mijoz_yaratish' %}" class="btn btn-brown"><i class="fas fa-plus me-1"></i>Yangi mijoz</a>
+</div>
+
+<div class="card p-3 mb-3">
+    <form method="get" class="d-flex gap-2">
+        <input type="text" name="q" class="form-control" placeholder="Ism, familiya, telefon yoki email bo'yicha qidirish..." value="{{ qidiruv }}">
+        <button type="submit" class="btn btn-brown">Qidirish</button>
+        {% if qidiruv %}<a href="{% url 'crm:mijozlar' %}" class="btn btn-outline-secondary">Tozalash</a>{% endif %}
+    </form>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Ism Familiya</th>
+                    <th>Telefon</th>
+                    <th>Email</th>
+                    <th>Tashriflar</th>
+                    <th>Qo'shilgan</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in mijozlar %}
+                <tr>
+                    <td class="text-muted">{{ forloop.counter }}</td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center me-2" style="width:32px;height:32px;font-weight:700;font-size:.8rem">
+                                {{ m.ism|first }}{{ m.familiya|first }}
+                            </div>
+                            <a href="{% url 'crm:mijoz_detail' m.pk %}" class="text-decoration-none fw-semibold">{{ m }}</a>
+                        </div>
+                    </td>
+                    <td>{{ m.telefon|default:"—" }}</td>
+                    <td>{{ m.email|default:"—" }}</td>
+                    <td><span class="badge bg-secondary">{{ m.tashriflar_soni }}</span></td>
+                    <td class="text-muted small">{{ m.qoshilgan_sana|date:"d.m.Y" }}</td>
+                    <td>
+                        <a href="{% url 'crm:mijoz_tahrirlash' m.pk %}" class="btn btn-sm btn-outline-primary me-1"><i class="fas fa-edit"></i></a>
+                        <a href="{% url 'crm:mijoz_ochirish' m.pk %}" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="text-center text-muted py-4">Mijoz topilmadi</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

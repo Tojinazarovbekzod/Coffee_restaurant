@@ -1,0 +1,60 @@
+{% extends 'erp/base.html' %}
+{% block title %}Buyurtma #{{ buyurtma.pk }}{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <a href="{% url 'erp:buyurtmalar' %}" class="text-muted small text-decoration-none"><i class="fas fa-arrow-left me-1"></i>Buyurtmalar</a>
+        <h4 class="mb-0 mt-1">Buyurtma #{{ buyurtma.pk }}</h4>
+    </div>
+    <form method="post" action="{% url 'erp:buyurtma_holat' buyurtma.pk %}" class="d-flex gap-2">
+        {% csrf_token %}
+        <select name="holat" class="form-select form-select-sm" style="width:auto">
+            {% for kod, nom in holat_turlari %}
+            <option value="{{ kod }}" {% if buyurtma.holat == kod %}selected{% endif %}>{{ nom }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-sm btn-brown">Yangilash</button>
+    </form>
+</div>
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card p-3">
+            <h6>Ma'lumotlar</h6>
+            <p class="mb-1"><strong>Mijoz:</strong> {{ buyurtma.mijoz_ism }}</p>
+            <p class="mb-1"><strong>Sana:</strong> {{ buyurtma.sana|date:"d.m.Y H:i" }}</p>
+            <p class="mb-1"><strong>Holat:</strong>
+                {% if buyurtma.holat == 'yangi' %}<span class="badge bg-primary">Yangi</span>
+                {% elif buyurtma.holat == 'jarayonda' %}<span class="badge bg-warning text-dark">Jarayonda</span>
+                {% elif buyurtma.holat == 'bajarildi' %}<span class="badge bg-success">Bajarildi</span>
+                {% else %}<span class="badge bg-danger">Bekor</span>{% endif %}
+            </p>
+            {% if buyurtma.izoh %}<p class="mb-0 text-muted small">{{ buyurtma.izoh }}</p>{% endif %}
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card p-3">
+            <h6 class="mb-3">Buyurtma qatorlari</h6>
+            <table class="table mb-0">
+                <thead class="table-light">
+                    <tr><th>Mahsulot</th><th>Miqdor</th><th>Narx</th><th>Jami</th></tr>
+                </thead>
+                <tbody>
+                    {% for q in buyurtma.qatorlar.all %}
+                    <tr>
+                        <td>{{ q.mahsulot_nomi }}</td>
+                        <td>{{ q.miqdor }}</td>
+                        <td>{{ q.narx|floatformat:0 }} so'm</td>
+                        <td>{{ q.jami|floatformat:0 }} so'm</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="text-muted text-center">Qator yo'q</td></tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr class="fw-bold"><td colspan="3" class="text-end">Jami:</td><td>{{ buyurtma.jami_summa|floatformat:0 }} so'm</td></tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

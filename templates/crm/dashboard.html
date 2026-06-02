@@ -1,0 +1,76 @@
+{% extends 'crm/base.html' %}
+{% block title %}CRM Boshqaruv paneli{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h4 class="mb-1">CRM Boshqaruv paneli</h4>
+        <p class="text-muted mb-0">Mijozlar va muloqotlar umumiy ko'rinishi</p>
+    </div>
+    <a href="{% url 'crm:mijoz_yaratish' %}" class="btn btn-brown">
+        <i class="fas fa-plus me-1"></i> Yangi mijoz
+    </a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="stat-card" style="background: linear-gradient(135deg,#8b4513,#c0714a)">
+            <div class="fs-2 fw-bold">{{ jami_mijozlar }}</div>
+            <div class="opacity-75">Jami mijozlar</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card" style="background: linear-gradient(135deg,#198754,#28a745)">
+            <div class="fs-2 fw-bold">{{ jami_muloqotlar }}</div>
+            <div class="opacity-75">Jami muloqotlar</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card" style="background: linear-gradient(135deg,#0d6efd,#3d8bfd)">
+            <div class="fs-2 fw-bold">{{ yangi_mijozlar|length }}</div>
+            <div class="opacity-75">Yangi mijozlar (oxirgi 5)</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-5">
+        <div class="card p-3">
+            <h6 class="mb-3"><i class="fas fa-user-plus text-success me-2"></i>Yangi qo'shilgan mijozlar</h6>
+            {% for m in yangi_mijozlar %}
+            <div class="d-flex align-items-center py-2 border-bottom">
+                <div class="rounded-circle bg-warning text-dark d-flex align-items-center justify-content-center me-3" style="width:38px;height:38px;font-weight:700">
+                    {{ m.ism|first }}{{ m.familiya|first }}
+                </div>
+                <div class="flex-grow-1">
+                    <div class="fw-semibold">{{ m }}</div>
+                    <small class="text-muted">{{ m.telefon|default:"Telefon yo'q" }}</small>
+                </div>
+                <a href="{% url 'crm:mijoz_detail' m.pk %}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-eye"></i>
+                </a>
+            </div>
+            {% empty %}
+            <p class="text-muted">Hali mijoz yo'q</p>
+            {% endfor %}
+            <a href="{% url 'crm:mijozlar' %}" class="btn btn-sm btn-brown mt-3 w-100">Barcha mijozlar</a>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div class="card p-3">
+            <h6 class="mb-3"><i class="fas fa-comments text-primary me-2"></i>Oxirgi muloqotlar</h6>
+            {% for mul in oxirgi_muloqotlar %}
+            <div class="d-flex py-2 border-bottom">
+                <span class="badge me-2 badge-{{ mul.tur }} align-self-start mt-1" style="font-size:.7rem">{{ mul.get_tur_display }}</span>
+                <div class="flex-grow-1">
+                    <a href="{% url 'crm:mijoz_detail' mul.mijoz.pk %}" class="fw-semibold text-decoration-none text-dark">{{ mul.mijoz }}</a>
+                    <div class="text-muted small">{{ mul.izoh|truncatechars:80 }}</div>
+                </div>
+                <small class="text-muted text-nowrap ms-2">{{ mul.sana|date:"d.m H:i" }}</small>
+            </div>
+            {% empty %}
+            <p class="text-muted">Hali muloqot yo'q</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

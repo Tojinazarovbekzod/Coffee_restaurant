@@ -1,0 +1,51 @@
+{% extends 'erp/base.html' %}
+{% block title %}Moliya{% endblock %}
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+    <h4 class="mb-0">Moliyaviy yozuvlar</h4>
+    <a href="{% url 'erp:moliya_qoshish' %}" class="btn btn-brown"><i class="fas fa-plus me-1"></i>Yozuv qo'shish</a>
+</div>
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card p-3 text-center">
+            <div class="text-success fw-bold fs-4">+{{ daromad|floatformat:0 }} so'm</div>
+            <small class="text-muted">Jami daromad</small>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3 text-center">
+            <div class="text-danger fw-bold fs-4">-{{ xarajat|floatformat:0 }} so'm</div>
+            <small class="text-muted">Jami xarajat</small>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3 text-center">
+            <div class="fw-bold fs-4 {% if foyda >= 0 %}text-success{% else %}text-danger{% endif %}">{{ foyda|floatformat:0 }} so'm</div>
+            <small class="text-muted">Sof foyda</small>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr><th>Sana</th><th>Tur</th><th>Tavsif</th><th>Summa</th></tr>
+            </thead>
+            <tbody>
+                {% for y in yozuvlar %}
+                <tr>
+                    <td class="text-muted small">{{ y.sana|date:"d.m.Y" }}</td>
+                    <td>{% if y.tur == 'daromad' %}<span class="badge bg-success">Daromad</span>{% else %}<span class="badge bg-danger">Xarajat</span>{% endif %}</td>
+                    <td>{{ y.tavsif }}</td>
+                    <td class="fw-semibold {% if y.tur == 'daromad' %}text-success{% else %}text-danger{% endif %}">
+                        {% if y.tur == 'daromad' %}+{% else %}-{% endif %}{{ y.summa|floatformat:0 }} so'm
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="text-center text-muted py-4">Yozuv yo'q</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
