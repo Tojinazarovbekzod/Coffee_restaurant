@@ -11,11 +11,12 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 import os
+import secrets
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-_s2zcd)z$7d$iu#=1_#2z3&jw4%dggb1qe!e@jzalrnrct_8_-')
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY') or secrets.token_hex(50)
 
 DEBUG = os.environ.get('DEBUG', '1') == '1'
 
@@ -71,7 +72,7 @@ WSGI_APPLICATION = 'coffee_restaurant.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': Path('/data/db.sqlite3'),
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
