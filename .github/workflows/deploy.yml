@@ -155,21 +155,21 @@ jobs:
 
             # ── 7. .env fayl yaratish ──────────────────────────────────────
             cat > "${DEPLOY_DIR}/.env" <<EOF
-DOCKER_IMAGE=${IMAGE}
-DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
-ALLOWED_HOSTS=${ALLOWED_HOSTS}
-CSRF_TRUSTED_ORIGINS=http://${EC2_HOST}
-EOF
-            chmod 600 "${DEPLOY_DIR}/.env"
-            echo ">>> .env: OK"
+              DOCKER_IMAGE=${IMAGE}
+              DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+              ALLOWED_HOSTS=${ALLOWED_HOSTS}
+              CSRF_TRUSTED_ORIGINS=http://${EC2_HOST}
+              EOF
+                          chmod 600 "${DEPLOY_DIR}/.env"
+                          echo ">>> .env: OK"
 
-            # ── 8. Docker Compose orqali ishga tushirish ───────────────────
-            cd "${DEPLOY_DIR}"
-            sudo docker pull "${IMAGE}:latest"
-            sudo docker compose -f docker-compose.prod.yml up -d --remove-orphans
-            sudo docker system prune -f
-            echo ">>> Konteynerlar: OK"
+                          # ── 8. Docker Compose orqali ishga tushirish ───────────────────
+                          cd "${DEPLOY_DIR}"
+                          sudo docker pull "${IMAGE}:latest"
+                          sudo docker compose -f docker-compose.prod.yml up -d --remove-orphans
+                          sudo docker system prune -f
+                          echo ">>> Konteynerlar: OK"
 
-            echo ""
-            echo "DEPLOY MUVAFFAQIYATLI YAKUNLANDI!"
-            echo "URL: http://${EC2_HOST}"
+                          echo ""
+                          echo "DEPLOY MUVAFFAQIYATLI YAKUNLANDI!"
+                          echo "URL: http://${EC2_HOST}"
