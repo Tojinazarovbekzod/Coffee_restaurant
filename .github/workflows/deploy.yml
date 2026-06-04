@@ -41,7 +41,7 @@ jobs:
           ALLOWED_HOSTS: localhost
           DEBUG: '1'
 
-  # ─── 2. Docker image build va ghcr.io ga push ─────────────────────
+  # ─── 2. Docker image build va ghcr.io ga p1ush ─────────────────────
   build-push:
     name: Docker Build & Push
     runs-on: ubuntu-latest
