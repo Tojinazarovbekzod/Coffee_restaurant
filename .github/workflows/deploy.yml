@@ -4,9 +4,8 @@
 #  EC2_HOST          — EC2 public IP (masalan: 54.12.34.56)
 #  EC2_USER          — SSH foydalanuvchi (Ubuntu uchun: ubuntu)
 #  EC2_SSH_KEY       — .pem formatidagi private SSH kalit (to'liq matn)
-#
-#  NOTE: GITHUB_TOKEN is provided automatically by GitHub Actions and does not
-#        need to be added as a custom secret.
+#  DJANGO_SECRET_KEY — Django secret key (50+ tasodifiy belgi)
+#  ALLOWED_HOSTS     — Vergul bilan: 54.12.34.56,yourdomain.com
 # ═══════════════════════════════════════════════════════════════════
 
 name: CI/CD Pipeline
@@ -87,6 +86,8 @@ jobs:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPO: ${{ github.repository }}
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
           EC2_HOST: ${{ secrets.EC2_HOST }}
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -94,7 +95,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           command_timeout: 15m
           debug: true
-          envs: DOCKER_IMAGE,GITHUB_ACTOR,GITHUB_TOKEN,GITHUB_REPO,EC2_HOST
+          envs: DOCKER_IMAGE,GITHUB_ACTOR,GITHUB_TOKEN,GITHUB_REPO,DJANGO_SECRET_KEY,ALLOWED_HOSTS,EC2_HOST
           script: |
             set -euo pipefail
             DEPLOY_DIR="/opt/coffee-restaurant"
@@ -154,8 +155,8 @@ jobs:
             echo ">>> Repo: OK"
 
             # ── 7. .env fayl yaratish ──────────────────────────────────────
-            printf 'DOCKER_IMAGE=%s\nCSRF_TRUSTED_ORIGINS=http://%s\n' \
-              "${IMAGE}" "${EC2_HOST}" \
+            printf 'DOCKER_IMAGE=%s\nDJANGO_SECRET_KEY=%s\nALLOWED_HOSTS=%s\nCSRF_TRUSTED_ORIGINS=http://%s\n' \
+              "${IMAGE}" "${DJANGO_SECRET_KEY}" "${ALLOWED_HOSTS}" "${EC2_HOST}" \
               > "${DEPLOY_DIR}/.env"
             chmod 600 "${DEPLOY_DIR}/.env"
             echo ">>> .env: OK"
