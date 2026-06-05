@@ -18,6 +18,7 @@ COPY . .
 RUN rm -f /etc/nginx/sites-enabled/default
 
 COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx/.htpasswd /etc/nginx/.htpasswd
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 EXPOSE 80 443
