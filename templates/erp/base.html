@@ -55,10 +55,6 @@
     <a href="{% url 'erp:moliya' %}" class="nav-link d-block {% if 'moliya' in request.resolver_match.url_name %}active{% endif %}">
         <i class="fas fa-wallet me-2"></i>Moliya
     </a>
-    <div class="nav-section">Sayt</div>
-    <a href="{% url 'home' %}" class="nav-link d-block">
-        <i class="fas fa-home me-2"></i>Bosh sahifa
-    </a>
 </div>
 <div class="main-content">
     {% block content %}{% endblock %}
