@@ -38,6 +38,7 @@ def buyurtma_qabul(request):
     return redirect('menu')
 
 
+@login_required
 def erp_dashboard(request):
     daromad = MoliyaviyYozuv.objects.filter(tur='daromad').aggregate(jami=Sum('summa'))['jami'] or 0
     xarajat = MoliyaviyYozuv.objects.filter(tur='xarajat').aggregate(jami=Sum('summa'))['jami'] or 0
@@ -57,6 +58,7 @@ def erp_dashboard(request):
 
 # --- Mahsulotlar ---
 
+@login_required
 def mahsulotlar(request):
     barcha = Mahsulot.objects.all()
     return render(request, 'erp/mahsulotlar.html', {
@@ -65,6 +67,7 @@ def mahsulotlar(request):
     })
 
 
+@login_required
 def mahsulot_yaratish(request):
     if request.method == 'POST':
         form = MahsulotForm(request.POST)
@@ -76,6 +79,7 @@ def mahsulot_yaratish(request):
     return render(request, 'erp/mahsulot_form.html', {'form': form, 'sarlavha': 'Yangi mahsulot'})
 
 
+@login_required
 def mahsulot_tahrirlash(request, pk):
     mahsulot = get_object_or_404(Mahsulot, pk=pk)
     if request.method == 'POST':
@@ -88,6 +92,7 @@ def mahsulot_tahrirlash(request, pk):
     return render(request, 'erp/mahsulot_form.html', {'form': form, 'sarlavha': 'Mahsulotni tahrirlash'})
 
 
+@login_required
 def mahsulot_ochirish(request, pk):
     mahsulot = get_object_or_404(Mahsulot, pk=pk)
     if request.method == 'POST':
@@ -98,6 +103,7 @@ def mahsulot_ochirish(request, pk):
 
 # --- Buyurtmalar ---
 
+@login_required
 def buyurtmalar(request):
     holat = request.GET.get('holat', '')
     barcha = Buyurtma.objects.all()
@@ -110,6 +116,7 @@ def buyurtmalar(request):
     })
 
 
+@login_required
 def buyurtma_detail(request, pk):
     buyurtma = get_object_or_404(Buyurtma, pk=pk)
     return render(request, 'erp/buyurtma_detail.html', {
@@ -118,6 +125,7 @@ def buyurtma_detail(request, pk):
     })
 
 
+@login_required
 def buyurtma_yaratish(request):
     if request.method == 'POST':
         form = BuyurtmaForm(request.POST)
@@ -129,6 +137,7 @@ def buyurtma_yaratish(request):
     return render(request, 'erp/buyurtma_form.html', {'form': form})
 
 
+@login_required
 def buyurtma_holat(request, pk):
     buyurtma = get_object_or_404(Buyurtma, pk=pk)
     if request.method == 'POST':
@@ -142,11 +151,13 @@ def buyurtma_holat(request, pk):
 
 # --- Xodimlar ---
 
+@login_required
 def xodimlar(request):
     barcha = Xodim.objects.filter(faolmi=True)
     return render(request, 'erp/xodimlar.html', {'xodimlar': barcha})
 
 
+@login_required
 def xodim_yaratish(request):
     if request.method == 'POST':
         form = XodimForm(request.POST)
@@ -158,6 +169,7 @@ def xodim_yaratish(request):
     return render(request, 'erp/xodim_form.html', {'form': form, 'sarlavha': 'Yangi xodim'})
 
 
+@login_required
 def xodim_tahrirlash(request, pk):
     xodim = get_object_or_404(Xodim, pk=pk)
     if request.method == 'POST':
@@ -172,6 +184,7 @@ def xodim_tahrirlash(request, pk):
 
 # --- Moliya ---
 
+@login_required
 def moliya(request):
     yozuvlar = MoliyaviyYozuv.objects.all()
     daromad = yozuvlar.filter(tur='daromad').aggregate(jami=Sum('summa'))['jami'] or 0
@@ -184,6 +197,7 @@ def moliya(request):
     })
 
 
+@login_required
 def moliya_qoshish(request):
     if request.method == 'POST':
         form = MoliyaviyYozuvForm(request.POST)

@@ -1,9 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from .models import Mijoz, Muloqot
 from .forms import MijozForm, MuloqotForm
 
 
+@login_required
 def crm_dashboard(request):
     context = {
         'jami_mijozlar': Mijoz.objects.count(),
@@ -14,6 +16,7 @@ def crm_dashboard(request):
     return render(request, 'crm/dashboard.html', context)
 
 
+@login_required
 def mijozlar_royxati(request):
     qidiruv = request.GET.get('q', '')
     mijozlar = Mijoz.objects.all()
@@ -27,6 +30,7 @@ def mijozlar_royxati(request):
     return render(request, 'crm/mijozlar.html', {'mijozlar': mijozlar, 'qidiruv': qidiruv})
 
 
+@login_required
 def mijoz_detail(request, pk):
     mijoz = get_object_or_404(Mijoz, pk=pk)
     muloqotlar = mijoz.muloqotlar.all()
@@ -38,6 +42,7 @@ def mijoz_detail(request, pk):
     })
 
 
+@login_required
 def mijoz_yaratish(request):
     if request.method == 'POST':
         form = MijozForm(request.POST)
@@ -49,6 +54,7 @@ def mijoz_yaratish(request):
     return render(request, 'crm/mijoz_form.html', {'form': form, 'sarlavha': "Yangi mijoz qo'shish"})
 
 
+@login_required
 def mijoz_tahrirlash(request, pk):
     mijoz = get_object_or_404(Mijoz, pk=pk)
     if request.method == 'POST':
@@ -61,6 +67,7 @@ def mijoz_tahrirlash(request, pk):
     return render(request, 'crm/mijoz_form.html', {'form': form, 'sarlavha': 'Mijozni tahrirlash', 'mijoz': mijoz})
 
 
+@login_required
 def mijoz_ochirish(request, pk):
     mijoz = get_object_or_404(Mijoz, pk=pk)
     if request.method == 'POST':
@@ -69,6 +76,7 @@ def mijoz_ochirish(request, pk):
     return render(request, 'crm/tasdiqlash.html', {'obyekt': mijoz, 'tur': 'mijoz'})
 
 
+@login_required
 def muloqot_qoshish(request, mijoz_pk):
     mijoz = get_object_or_404(Mijoz, pk=mijoz_pk)
     if request.method == 'POST':

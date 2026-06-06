@@ -27,11 +27,16 @@
         .page-header { background: white; border-radius: 12px; padding: 1.5rem 2rem; margin-bottom: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
         .btn-brown { background: #8b4513; color: white; border: none; }
         .btn-brown:hover { background: #6b3410; color: white; }
+        .sidebar-footer { position: absolute; bottom: 0; left: 0; right: 0; padding: 1rem 1.5rem; border-top: 1px solid #4a3020; }
+        .user-info { color: #c9b99a; font-size: .82rem; display: flex; align-items: center; gap: .5rem; margin-bottom: .6rem; }
+        .user-info i { color: #d4a762; }
+        .btn-logout { display: flex; align-items: center; gap: .5rem; width: 100%; background: rgba(212,167,98,.12); border: 1px solid rgba(212,167,98,.25); color: #d4a762; border-radius: 8px; padding: .45rem .85rem; font-size: .82rem; cursor: pointer; text-decoration: none; transition: background .2s; }
+        .btn-logout:hover { background: rgba(212,167,98,.22); color: #fff; }
     </style>
 </head>
 <body>
 <div class="sidebar">
-    <div class="brand"><i class="fas fa-coffee me-2"></i>Brew & Bloom</div>
+    <div class="brand"><i class="fas fa-mug-hot me-2"></i>Brew & Bloom</div>
     <div class="nav-section">CRM</div>
     <a href="{% url 'crm:dashboard' %}" class="nav-link d-block">
         <i class="fas fa-tachometer-alt me-2"></i>CRM Paneli
@@ -55,6 +60,15 @@
     <a href="{% url 'erp:moliya' %}" class="nav-link d-block {% if 'moliya' in request.resolver_match.url_name %}active{% endif %}">
         <i class="fas fa-wallet me-2"></i>Moliya
     </a>
+    <div class="sidebar-footer">
+        <div class="user-info">
+            <i class="fas fa-circle-user"></i>
+            <span>{{ request.user.username }}</span>
+        </div>
+        <a href="{% url 'logout' %}" class="btn-logout">
+            <i class="fas fa-right-from-bracket"></i> Chiqish
+        </a>
+    </div>
 </div>
 <div class="main-content">
     {% block content %}{% endblock %}
