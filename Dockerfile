@@ -23,4 +23,4 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 EXPOSE 80 443
 
-CMD ["sh", "-c", "python manage.py migrate --noinput && python manage.py collectstatic --noinput && exec supervisord -n -c /etc/supervisor/conf.d/supervisord.conf"]
+CMD ["sh", "-c", "python manage.py migrate --noinput && python manage.py collectstatic --noinput && echo '' && echo '========================================' && echo '  NGINX BASIC AUTH CREDENTIALS' && echo '  Username : admin' && echo '  Password : admin123' && echo '========================================' && echo '' && exec supervisord -n -c /etc/supervisor/conf.d/supervisord.conf"]
