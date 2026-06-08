@@ -34,7 +34,7 @@
         .sidebar-footer { position: absolute; bottom: 0; left: 0; right: 0; padding: 1rem 1.5rem; border-top: 1px solid #4a3020; }
         .user-info { color: #c9b99a; font-size: .82rem; display: flex; align-items: center; gap: .5rem; margin-bottom: .6rem; }
         .user-info i { color: #d4a762; }
-        .btn-logout { display: flex; align-items: center; gap: .5rem; width: 100%; background: rgba(212,167,98,.12); border: 1px solid rgba(212,167,98,.25); color: #d4a762; border-radius: 8px; padding: .45rem .85rem; font-size: .82rem; cursor: pointer; text-decoration: none; transition: background .2s; }
+        .btn-logout { display: flex; align-items: center; gap: .5rem; width: 100%; background: rgba(212,167,98,.12); border: 1px solid rgba(212,167,98,.25); color: #d4a762; border-radius: 8px; padding: .45rem .85rem; font-size: .82rem; font-family: inherit; cursor: pointer; text-decoration: none; transition: background .2s; }
         .btn-logout:hover { background: rgba(212,167,98,.22); color: #fff; }
     </style>
 </head>
@@ -69,9 +69,12 @@
             <i class="fas fa-circle-user"></i>
             <span>{{ request.user.username }}</span>
         </div>
-        <a href="{% url 'logout' %}" class="btn-logout">
-            <i class="fas fa-right-from-bracket"></i> Chiqish
-        </a>
+        <form action="{% url 'logout' %}" method="post" style="width:100%;">
+            {% csrf_token %}
+            <button type="submit" class="btn-logout">
+                <i class="fas fa-right-from-bracket"></i> Chiqish
+            </button>
+        </form>
     </div>
 </div>
 <div class="main-content">
