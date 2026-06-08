@@ -60,11 +60,12 @@ class BuyurtmaQatori(models.Model):
 
 
 XODIM_LAVOZIMLARI = [
-    ('barista', 'Barista'),
-    ('ofitsiant', 'Ofitsiant'),
-    ('oshpaz', 'Oshpaz'),
-    ('menejer', 'Menejer'),
-    ('kassir', 'Kassir'),
+    ('ombor_mudiri', 'Ombor mudiri'),
+    ('omborchi', 'Omborchi'),
+    ('savdo_vakili', 'Savdo vakili'),
+    ('logist', 'Logist'),
+    ('buxgalter', 'Buxgalter'),
+    ('haydovchi', 'Haydovchi'),
 ]
 
 

@@ -6,14 +6,14 @@
         <h4 class="mb-1">CRM Boshqaruv paneli</h4>
         <p class="text-muted mb-0">Mijozlar va muloqotlar umumiy ko'rinishi</p>
     </div>
-    <a href="{% url 'crm:mijoz_yaratish' %}" class="btn btn-brown">
+    <a href="{% url 'crm:mijoz_yaratish' %}" class="btn btn-amber">
         <i class="fas fa-plus me-1"></i> Yangi mijoz
     </a>
 </div>
 
 <div class="row g-3 mb-4">
     <div class="col-md-4">
-        <div class="stat-card" style="background: linear-gradient(135deg,#8b4513,#c0714a)">
+        <div class="stat-card" style="background: linear-gradient(135deg,#d9831f,#f0a050)">
             <div class="fs-2 fw-bold">{{ jami_mijozlar }}</div>
             <div class="opacity-75">Jami mijozlar</div>
         </div>
@@ -52,7 +52,7 @@
             {% empty %}
             <p class="text-muted">Hali mijoz yo'q</p>
             {% endfor %}
-            <a href="{% url 'crm:mijozlar' %}" class="btn btn-sm btn-brown mt-3 w-100">Barcha mijozlar</a>
+            <a href="{% url 'crm:mijozlar' %}" class="btn btn-sm btn-amber mt-3 w-100">Barcha mijozlar</a>
         </div>
     </div>
     <div class="col-md-7">
