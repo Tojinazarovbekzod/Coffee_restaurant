@@ -1,16 +1,16 @@
-{% extends 'erp/base.html' %}
+{% extends 'base.html' %}
 {% block title %}Buyurtmalar{% endblock %}
 {% block content %}
 <div class="page-header d-flex justify-content-between align-items-center">
     <h4 class="mb-0">Buyurtmalar</h4>
-    <a href="{% url 'erp:buyurtma_yaratish' %}" class="btn btn-amber"><i class="fas fa-plus me-1"></i>Yangi buyurtma</a>
+    <a href="{% url 'erp:buyurtma_yaratish' %}" class="btn btn-accent"><i class="fas fa-plus me-1"></i>Yangi buyurtma</a>
 </div>
 <div class="card p-3 mb-3">
     <form method="get" class="d-flex gap-2 flex-wrap">
         {% for holat_kod, holat_nom in holat_turlari %}
-        <a href="?holat={{ holat_kod }}" class="btn btn-sm {% if holat == holat_kod %}btn-amber{% else %}btn-outline-secondary{% endif %}">{{ holat_nom }}</a>
+        <a href="?holat={{ holat_kod }}" class="btn btn-sm {% if holat == holat_kod %}btn-accent{% else %}btn-outline-secondary{% endif %}">{{ holat_nom }}</a>
         {% endfor %}
-        <a href="?" class="btn btn-sm {% if not holat %}btn-amber{% else %}btn-outline-secondary{% endif %}">Barchasi</a>
+        <a href="?" class="btn btn-sm {% if not holat %}btn-accent{% else %}btn-outline-secondary{% endif %}">Barchasi</a>
     </form>
 </div>
 <div class="card">

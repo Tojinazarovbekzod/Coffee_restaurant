@@ -1,4 +1,4 @@
-{% extends 'erp/base.html' %}
+{% extends 'base.html' %}
 {% block title %}Buyurtma #{{ buyurtma.pk }}{% endblock %}
 {% block content %}
 <div class="page-header d-flex justify-content-between align-items-center">
@@ -13,7 +13,7 @@
             <option value="{{ kod }}" {% if buyurtma.holat == kod %}selected{% endif %}>{{ nom }}</option>
             {% endfor %}
         </select>
-        <button type="submit" class="btn btn-sm btn-amber">Yangilash</button>
+        <button type="submit" class="btn btn-sm btn-accent">Yangilash</button>
     </form>
 </div>
 <div class="row g-3">

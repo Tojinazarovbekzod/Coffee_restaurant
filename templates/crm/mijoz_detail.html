@@ -1,4 +1,4 @@
-{% extends 'crm/base.html' %}
+{% extends 'base.html' %}
 {% block title %}{{ mijoz }}{% endblock %}
 {% block content %}
 <div class="page-header d-flex justify-content-between align-items-center">
@@ -46,7 +46,7 @@
                     <div class="col-md-4">{{ muloqot_form.tur }}</div>
                     <div class="col-md-8">{{ muloqot_form.izoh }}</div>
                 </div>
-                <button type="submit" class="btn btn-sm btn-amber mt-2"><i class="fas fa-plus me-1"></i>Muloqot qo'shish</button>
+                <button type="submit" class="btn btn-sm btn-accent mt-2"><i class="fas fa-plus me-1"></i>Muloqot qo'shish</button>
             </form>
             {% for mul in muloqotlar %}
             <div class="d-flex py-2 border-bottom">

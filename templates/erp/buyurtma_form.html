@@ -1,4 +1,4 @@
-{% extends 'erp/base.html' %}
+{% extends 'base.html' %}
 {% block title %}Yangi buyurtma{% endblock %}
 {% block content %}
 <div class="page-header">
@@ -12,7 +12,7 @@
         <div class="mb-3"><label class="form-label fw-semibold">Holat</label>{{ form.holat }}</div>
         <div class="mb-3"><label class="form-label fw-semibold">Izoh</label>{{ form.izoh }}</div>
         <div class="d-flex gap-2 mt-4">
-            <button type="submit" class="btn btn-amber"><i class="fas fa-save me-1"></i>Saqlash</button>
+            <button type="submit" class="btn btn-accent"><i class="fas fa-save me-1"></i>Saqlash</button>
             <a href="{% url 'erp:buyurtmalar' %}" class="btn btn-outline-secondary">Bekor qilish</a>
         </div>
     </form>

@@ -1,102 +1,306 @@
-{% extends 'erp/base.html' %}
-{% block title %}ERP Boshqaruv paneli{% endblock %}
+{% extends 'base.html' %}
+{% block title %}Boshqaruv paneli{% endblock %}
 {% block content %}
-<div class="page-header">
-    <h4 class="mb-1">ERP Boshqaruv paneli</h4>
-    <p class="text-muted mb-0">Biznes resurslarini boshqarish</p>
+{{ oylik_daromad|json_script:"oylik-daromad-data" }}
+{{ holat_taqsimoti|json_script:"holat-taqsimoti-data" }}
+
+<div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div>
+        <h4 class="mb-1">Boshqaruv paneli</h4>
+        <p class="text-muted mb-0">Ulgurji savdo — biznes ko'rsatkichlarining umumiy ko'rinishi</p>
+    </div>
+    <a href="{% url 'erp:dashboard' %}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-rotate-right me-1"></i>Yangilash</a>
 </div>
 
-<div class="row g-3 mb-4">
-    <div class="col-md-3">
-        <div class="stat-card" style="background:linear-gradient(135deg,#d9831f,#f0a050)">
-            <div class="fs-2 fw-bold">{{ jami_mahsulotlar }}</div>
-            <div class="opacity-75">Mahsulotlar</div>
-            {% if kam_qolgan %}<small class="opacity-75"><i class="fas fa-exclamation-triangle"></i> {{ kam_qolgan|length }} ta kam qolgan</small>{% endif %}
+<div class="row g-3 mb-3">
+    <div class="col-xl-5">
+        <div class="card hero-card h-100 p-4 d-flex flex-column">
+            <div class="text-muted small text-uppercase" style="letter-spacing:.1em">Umumiy daromad</div>
+            <div class="hero-figure mt-1">{{ daromad|floatformat:0 }}<span class="fs-6 text-muted fw-normal ms-1">so'm</span></div>
+            <div class="flex-grow-1 mt-3" style="min-height:120px">
+                <canvas id="daromadChart"></canvas>
+            </div>
+            <div class="hero-footer mt-3 pt-3 border-top">
+                <div>
+                    <div class="hero-footer-label">Buyurtmalar</div>
+                    <div class="fw-bold">{{ jami_buyurtmalar }}</div>
+                </div>
+                <div>
+                    <div class="hero-footer-label">O'rtacha chek</div>
+                    <div class="fw-bold">{{ ortacha_chek|floatformat:0 }}</div>
+                </div>
+                <div>
+                    <div class="hero-footer-label">Yetkazilgan</div>
+                    <div class="fw-bold">{{ yetkazilgan_soni }}</div>
+                </div>
+                <div>
+                    <div class="hero-footer-label">Sof foyda</div>
+                    <div class="fw-bold {% if foyda >= 0 %}text-success{% else %}text-danger{% endif %}">{{ foyda|floatformat:0 }}</div>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="stat-card" style="background:linear-gradient(135deg,#0d6efd,#3d8bfd)">
-            <div class="fs-2 fw-bold">{{ jami_buyurtmalar }}</div>
-            <div class="opacity-75">Buyurtmalar</div>
-            <small class="opacity-75">{{ yangi_buyurtmalar }} ta yangi</small>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="stat-card" style="background:linear-gradient(135deg,#6610f2,#9d4edd)">
-            <div class="fs-2 fw-bold">{{ jami_xodimlar }}</div>
-            <div class="opacity-75">Faol xodimlar</div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="stat-card" style="background:linear-gradient(135deg,{% if foyda >= 0 %}#198754,#28a745{% else %}#dc3545,#e05260{% endif %})">
-            <div class="fs-2 fw-bold">{{ foyda|floatformat:0 }}</div>
-            <div class="opacity-75">Foyda (so'm)</div>
+    <div class="col-xl-7">
+        <div class="row g-3">
+            <div class="col-sm-6">
+                <div class="card stat-tile h-100 p-3">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <span class="text-muted small text-uppercase" style="letter-spacing:.08em">Faol mijozlar</span>
+                        <span class="tile-icon"><i class="fas fa-user-group"></i></span>
+                    </div>
+                    <div class="fs-2 fw-bold">{{ jami_mijozlar }}</div>
+                    <div class="text-muted small mt-1">{{ jami_mahsulotlar }} ta mahsulot · {{ jami_xodimlar }} ta xodim</div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="card stat-tile h-100 p-3">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <span class="text-muted small text-uppercase" style="letter-spacing:.08em">Kutilayotgan</span>
+                        <span class="tile-icon"><i class="fas fa-hourglass-half"></i></span>
+                    </div>
+                    <div class="fs-2 fw-bold">{{ kutilayotgan_soni }}</div>
+                    <div class="text-muted small mt-1">buyurtma jarayonda</div>
+                </div>
+            </div>
+            {% if kam_qolgan %}
+            <div class="col-12">
+                <a href="{% url 'erp:mahsulotlar' %}" class="card alert-tile p-3 d-flex flex-row align-items-center gap-3 text-decoration-none">
+                    <span class="tile-icon"><i class="fas fa-triangle-exclamation"></i></span>
+                    <div class="flex-grow-1">
+                        <span class="fw-semibold text-light">{{ kam_qolgan|length }} ta mahsulot</span>
+                        <span class="text-muted">omborda kam qoldi — to'ldirish vaqti keldi</span>
+                    </div>
+                    <i class="fas fa-arrow-right text-muted"></i>
+                </a>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
 
 <div class="row g-3 mb-3">
-    <div class="col-md-4">
-        <div class="card p-3 text-center">
-            <div class="text-success fw-bold fs-5">+{{ daromad|floatformat:0 }} so'm</div>
-            <small class="text-muted">Jami daromad</small>
+    <div class="col-xl-6">
+        <div class="card p-3 h-100">
+            <h6 class="mb-1"><i class="fas fa-chart-pie me-2" style="color:var(--accent-purple)"></i>Buyurtmalar holati</h6>
+            <p class="text-muted small mb-2">Joriy holat bo'yicha taqsimot</p>
+            <div class="d-flex align-items-center gap-3">
+                <div style="width:140px;height:140px;flex-shrink:0">
+                    <canvas id="holatChart"></canvas>
+                </div>
+                <div class="flex-grow-1">
+                    {% for h in holat_taqsimoti %}
+                    <div class="d-flex align-items-center justify-content-between py-1">
+                        <span class="d-flex align-items-center gap-2 small">
+                            <span class="rounded-circle d-inline-block" style="width:9px;height:9px;background:{{ h.rang }}"></span>
+                            {{ h.nom }}
+                        </span>
+                        <span class="text-muted small">{{ h.soni }} · {{ h.foiz }}%</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card p-3 text-center">
-            <div class="text-danger fw-bold fs-5">-{{ xarajat|floatformat:0 }} so'm</div>
-            <small class="text-muted">Jami xarajat</small>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card p-3 text-center">
-            <div class="fw-bold fs-5 {% if foyda >= 0 %}text-success{% else %}text-danger{% endif %}">{{ foyda|floatformat:0 }} so'm</div>
-            <small class="text-muted">Sof foyda</small>
+    <div class="col-xl-6">
+        <div class="card p-3 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="mb-0"><i class="fas fa-chart-column me-2" style="color:var(--accent-blue)"></i>Oylik daromad</h6>
+                <span class="text-muted small">so'nggi 6 oy</span>
+            </div>
+            <canvas id="oylikChart" height="160"></canvas>
         </div>
     </div>
 </div>
 
-<div class="row g-3">
-    <div class="col-md-6">
+<div class="row g-3 mb-3">
+    <div class="col-xl-12">
         <div class="card p-3">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="mb-0"><i class="fas fa-receipt text-primary me-2"></i>Oxirgi buyurtmalar</h6>
-                <a href="{% url 'erp:buyurtmalar' %}" class="btn btn-sm btn-amber">Barchasi</a>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="mb-0"><i class="fas fa-boxes-stacked me-2" style="color:var(--accent-amber)"></i>Kam qolgan mahsulotlar</h6>
+                <a href="{% url 'erp:mahsulotlar' %}" class="text-muted small text-decoration-none">Barchasi <i class="fas fa-arrow-right ms-1"></i></a>
             </div>
-            {% for b in oxirgi_buyurtmalar %}
-            <div class="d-flex align-items-center py-2 border-bottom">
-                <div class="flex-grow-1">
-                    <a href="{% url 'erp:buyurtma_detail' b.pk %}" class="fw-semibold text-decoration-none text-dark">#{{ b.pk }} - {{ b.mijoz_ism }}</a>
-                    <div class="text-muted small">{{ b.sana|date:"d.m.Y H:i" }}</div>
+            <div class="row g-2">
+                {% for m in kam_qolgan %}
+                <div class="col-sm-6 col-lg-4">
+                    <div class="d-flex align-items-center justify-content-between py-2 px-1 border-bottom">
+                        <div>
+                            <div class="fw-semibold small">{{ m.nom }}</div>
+                            <div class="text-muted small">Minimal: {{ m.minimal_miqdor }} {{ m.birlik }}</div>
+                        </div>
+                        <span class="badge bg-danger">{{ m.miqdor }} {{ m.birlik }}</span>
+                    </div>
                 </div>
-                {% if b.holat == 'yangi' %}<span class="badge bg-primary">Yangi</span>
-                {% elif b.holat == 'jarayonda' %}<span class="badge bg-warning text-dark">Jarayonda</span>
-                {% elif b.holat == 'bajarildi' %}<span class="badge bg-success">Bajarildi</span>
-                {% else %}<span class="badge bg-danger">Bekor</span>{% endif %}
+                {% empty %}
+                <div class="col-12"><p class="text-success small mb-0 mt-2"><i class="fas fa-circle-check me-2"></i>Barcha mahsulotlar yetarli miqdorda</p></div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-xl-6">
+        <div class="card p-3 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0"><i class="fas fa-trophy me-2" style="color:var(--accent-pink)"></i>Top mijozlar</h6>
+                <span class="text-muted small">eng ko'p xarid bo'yicha</span>
+            </div>
+            {% for m in top_mijozlar %}
+            <div class="d-flex align-items-center gap-3 py-2">
+                <span class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 fw-bold small"
+                      style="width:28px;height:28px;background:linear-gradient(135deg,var(--accent-teal),var(--accent-purple));color:#fff">{{ forloop.counter }}</span>
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between small">
+                        <span class="fw-semibold">{{ m.mijoz }}</span>
+                        <span class="text-muted">{{ m.jami|floatformat:0 }} so'm</span>
+                    </div>
+                    <div class="rounded-pill mt-1" style="height:6px;background:rgba(255,255,255,.06);overflow:hidden">
+                        <div class="h-100 rounded-pill" style="width:{{ m.foiz }}%;background:linear-gradient(90deg,var(--accent-teal),var(--accent-purple))"></div>
+                    </div>
+                </div>
             </div>
             {% empty %}
-            <p class="text-muted">Buyurtma yo'q</p>
+            <p class="text-muted small mb-0">Hali buyurtmalar mavjud emas</p>
             {% endfor %}
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="card p-3">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="mb-0"><i class="fas fa-exclamation-triangle text-warning me-2"></i>Kam qolgan mahsulotlar</h6>
-                <a href="{% url 'erp:mahsulotlar' %}" class="btn btn-sm btn-amber">Inventar</a>
-            </div>
-            {% for m in kam_qolgan %}
-            <div class="d-flex align-items-center py-2 border-bottom">
+    <div class="col-xl-6">
+        <div class="card p-3 h-100">
+            <h6 class="mb-3"><i class="fas fa-clock-rotate-left me-2" style="color:var(--accent-teal)"></i>Faollik tarixi</h6>
+            {% for f in faollik_tarixi %}
+            <div class="d-flex align-items-start gap-3 py-2 {% if not forloop.last %}border-bottom{% endif %}">
+                <span class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                      style="width:32px;height:32px;background:rgba(139,92,246,.14);color:var(--accent-purple)">
+                    <i class="fas {{ f.ikon }} small"></i>
+                </span>
                 <div class="flex-grow-1">
-                    <span class="fw-semibold">{{ m.nom }}</span>
-                    <div class="text-muted small">Minimal: {{ m.minimal_miqdor }} {{ m.birlik }}</div>
+                    <div class="small">{{ f.matn }}</div>
+                    <div class="text-muted" style="font-size:.74rem">{{ f.vaqt|timesince }} oldin</div>
                 </div>
-                <span class="badge bg-danger">{{ m.miqdor }} {{ m.birlik }}</span>
             </div>
             {% empty %}
-            <p class="text-success"><i class="fas fa-check-circle me-2"></i>Barcha mahsulotlar yetarli</p>
+            <p class="text-muted small mb-0">Hozircha faollik mavjud emas</p>
             {% endfor %}
         </div>
     </div>
 </div>
+
+<div class="card p-3">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h6 class="mb-0"><i class="fas fa-receipt me-2" style="color:var(--accent-blue)"></i>So'nggi buyurtmalar</h6>
+        <a href="{% url 'erp:buyurtmalar' %}" class="btn btn-sm btn-accent">Barchasi</a>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Mijoz</th>
+                    <th>Summa</th>
+                    <th>Holat</th>
+                    <th>Sana</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for b in oxirgi_buyurtmalar %}
+                <tr>
+                    <td class="text-muted">#{{ b.pk }}</td>
+                    <td><a href="{% url 'erp:buyurtma_detail' b.pk %}" class="fw-semibold text-decoration-none link-card">{{ b.mijoz_ism }}</a></td>
+                    <td>{{ b.jami_summa|floatformat:0 }} so'm</td>
+                    <td>
+                        {% if b.holat == 'yangi' %}<span class="badge bg-primary">Yangi</span>
+                        {% elif b.holat == 'jarayonda' %}<span class="badge bg-warning text-dark">Jarayonda</span>
+                        {% elif b.holat == 'bajarildi' %}<span class="badge bg-success">Bajarildi</span>
+                        {% else %}<span class="badge bg-danger">Bekor</span>{% endif %}
+                    </td>
+                    <td class="text-muted">{{ b.sana|date:"Y.m.d" }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="text-muted text-center py-3">Hozircha buyurtmalar yo'q</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+    const oylikDaromad = JSON.parse(document.getElementById('oylik-daromad-data').textContent);
+    const holatTaqsimoti = JSON.parse(document.getElementById('holat-taqsimoti-data').textContent);
+
+    Chart.defaults.color = '#9b96b5';
+    Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
+    const gridColor = 'rgba(255,255,255,.06)';
+
+    const oyLabels = oylikDaromad.map(o => o.oy);
+    const oySummalar = oylikDaromad.map(o => o.summa);
+
+    const lineCtx = document.getElementById('daromadChart');
+    const lineGradient = lineCtx.getContext('2d').createLinearGradient(0, 0, 0, 160);
+    lineGradient.addColorStop(0, 'rgba(45,212,191,.32)');
+    lineGradient.addColorStop(1, 'rgba(45,212,191,0)');
+    new Chart(lineCtx, {
+        type: 'line',
+        data: {
+            labels: oyLabels,
+            datasets: [{
+                data: oySummalar,
+                borderColor: '#2dd4bf',
+                backgroundColor: lineGradient,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 3,
+                pointBackgroundColor: '#2dd4bf',
+            }]
+        },
+        options: {
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { display: false } },
+                y: { grid: { color: gridColor }, ticks: { callback: v => v.toLocaleString() } }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('holatChart'), {
+        type: 'doughnut',
+        data: {
+            labels: holatTaqsimoti.map(h => h.nom),
+            datasets: [{
+                data: holatTaqsimoti.map(h => h.soni),
+                backgroundColor: holatTaqsimoti.map(h => h.rang),
+                borderColor: '#0c0a18',
+                borderWidth: 2,
+            }]
+        },
+        options: {
+            cutout: '70%',
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    new Chart(document.getElementById('oylikChart'), {
+        type: 'bar',
+        data: {
+            labels: oyLabels,
+            datasets: [{
+                data: oySummalar,
+                backgroundColor: '#8b5cf6',
+                borderRadius: 6,
+                maxBarThickness: 38,
+            }]
+        },
+        options: {
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { display: false } },
+                y: { grid: { color: gridColor }, ticks: { callback: v => v.toLocaleString() } }
+            }
+        }
+    });
+})();
+</script>
 {% endblock %}

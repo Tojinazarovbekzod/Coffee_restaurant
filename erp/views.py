@@ -1,11 +1,70 @@
 import json
+from datetime import datetime, time
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.db.models import Sum, F
+from django.utils import timezone
 from .models import Mahsulot, Buyurtma, BuyurtmaQatori, Xodim, MoliyaviyYozuv, BUYURTMA_HOLATLARI
+from crm.models import Mijoz, Muloqot
 from .forms import MahsulotForm, BuyurtmaForm, XodimForm, MoliyaviyYozuvForm
+
+OY_QISQA_NOMLARI = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyun', 'Iyul', 'Avg', 'Sen', 'Okt', 'Noy', 'Dek']
+
+HOLAT_RANGLARI = {
+    'yangi': '#3b82f6',
+    'jarayonda': '#f59e0b',
+    'bajarildi': '#22c55e',
+    'bekor': '#ef4444',
+}
+
+
+def _oxirgi_oylar_daromadi(oylar_soni=6):
+    bugun = timezone.now().date()
+    natija = []
+    yil, oy = bugun.year, bugun.month
+    for _ in range(oylar_soni):
+        summa = MoliyaviyYozuv.objects.filter(
+            tur='daromad', sana__year=yil, sana__month=oy
+        ).aggregate(jami=Sum('summa'))['jami'] or 0
+        natija.append({'oy': OY_QISQA_NOMLARI[oy - 1], 'summa': float(summa)})
+        oy -= 1
+        if oy == 0:
+            oy = 12
+            yil -= 1
+    natija.reverse()
+    return natija
+
+
+def _faollik_tarixi(limit=6):
+    yozuvlar = []
+    for b in Buyurtma.objects.order_by('-sana')[:5]:
+        yozuvlar.append({'matn': f"Yangi buyurtma qabul qilindi: #{b.pk} — {b.mijoz_ism}", 'vaqt': b.sana, 'ikon': 'fa-file-invoice'})
+    for m in Mijoz.objects.order_by('-qoshilgan_sana')[:5]:
+        yozuvlar.append({'matn': f"Yangi mijoz qo'shildi: {m}", 'vaqt': m.qoshilgan_sana, 'ikon': 'fa-user-plus'})
+    for mu in Muloqot.objects.select_related('mijoz').order_by('-sana')[:5]:
+        yozuvlar.append({'matn': f"{mu.mijoz} bilan {mu.get_tur_display().lower()} qayd etildi", 'vaqt': mu.sana, 'ikon': 'fa-comments'})
+    for y in MoliyaviyYozuv.objects.order_by('-sana')[:5]:
+        vaqt = timezone.make_aware(datetime.combine(y.sana, time.min))
+        yozuvlar.append({'matn': f"{y.get_tur_display()} qayd etildi: {y.tavsif}", 'vaqt': vaqt, 'ikon': 'fa-wallet'})
+    yozuvlar.sort(key=lambda x: x['vaqt'], reverse=True)
+    return yozuvlar[:limit]
+
+
+def _top_mijozlar(limit=5):
+    qs = (
+        BuyurtmaQatori.objects
+        .values(mijoz=F('buyurtma__mijoz_ism'))
+        .annotate(jami=Sum(F('miqdor') * F('narx')))
+        .order_by('-jami')[:limit]
+    )
+    natija = list(qs)
+    eng_katta = natija[0]['jami'] if natija else 0
+    for item in natija:
+        item['jami'] = float(item['jami'])
+        item['foiz'] = round(item['jami'] / float(eng_katta) * 100) if eng_katta else 0
+    return natija
 
 
 @login_required(login_url='/login/')
@@ -42,16 +101,41 @@ def buyurtma_qabul(request):
 def erp_dashboard(request):
     daromad = MoliyaviyYozuv.objects.filter(tur='daromad').aggregate(jami=Sum('summa'))['jami'] or 0
     xarajat = MoliyaviyYozuv.objects.filter(tur='xarajat').aggregate(jami=Sum('summa'))['jami'] or 0
+
+    barcha_buyurtmalar = Buyurtma.objects.all()
+    jami_buyurtmalar = barcha_buyurtmalar.count()
+    yetkazilgan_soni = barcha_buyurtmalar.filter(holat='bajarildi').count()
+    kutilayotgan_soni = barcha_buyurtmalar.filter(holat__in=['yangi', 'jarayonda']).count()
+
+    summalar = [float(b.jami_summa) for b in barcha_buyurtmalar]
+    ortacha_chek = sum(summalar) / len(summalar) if summalar else 0
+
+    holat_taqsimoti = []
+    for kod, nom in BUYURTMA_HOLATLARI:
+        soni = barcha_buyurtmalar.filter(holat=kod).count()
+        foiz = round(soni / jami_buyurtmalar * 100) if jami_buyurtmalar else 0
+        holat_taqsimoti.append({'kod': kod, 'nom': nom, 'soni': soni, 'foiz': foiz, 'rang': HOLAT_RANGLARI[kod]})
+
+    oylik_daromad = _oxirgi_oylar_daromadi()
+
     context = {
         'jami_mahsulotlar': Mahsulot.objects.count(),
         'kam_qolgan': Mahsulot.objects.filter(miqdor__lte=F('minimal_miqdor')),
-        'jami_buyurtmalar': Buyurtma.objects.count(),
+        'jami_buyurtmalar': jami_buyurtmalar,
         'yangi_buyurtmalar': Buyurtma.objects.filter(holat='yangi').count(),
+        'yetkazilgan_soni': yetkazilgan_soni,
+        'kutilayotgan_soni': kutilayotgan_soni,
+        'ortacha_chek': ortacha_chek,
+        'jami_mijozlar': Mijoz.objects.count(),
         'jami_xodimlar': Xodim.objects.filter(faolmi=True).count(),
         'daromad': daromad,
         'xarajat': xarajat,
         'foyda': daromad - xarajat,
-        'oxirgi_buyurtmalar': Buyurtma.objects.order_by('-sana')[:5],
+        'oxirgi_buyurtmalar': barcha_buyurtmalar.order_by('-sana')[:5],
+        'top_mijozlar': _top_mijozlar(),
+        'faollik_tarixi': _faollik_tarixi(),
+        'holat_taqsimoti': holat_taqsimoti,
+        'oylik_daromad': oylik_daromad,
     }
     return render(request, 'erp/dashboard.html', context)
 

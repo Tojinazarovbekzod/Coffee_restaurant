@@ -1,15 +1,15 @@
-{% extends 'crm/base.html' %}
+{% extends 'base.html' %}
 {% block title %}Mijozlar{% endblock %}
 {% block content %}
 <div class="page-header d-flex justify-content-between align-items-center">
     <h4 class="mb-0">Mijozlar ro'yxati</h4>
-    <a href="{% url 'crm:mijoz_yaratish' %}" class="btn btn-amber"><i class="fas fa-plus me-1"></i>Yangi mijoz</a>
+    <a href="{% url 'crm:mijoz_yaratish' %}" class="btn btn-accent"><i class="fas fa-plus me-1"></i>Yangi mijoz</a>
 </div>
 
 <div class="card p-3 mb-3">
     <form method="get" class="d-flex gap-2">
         <input type="text" name="q" class="form-control" placeholder="Ism, familiya, telefon yoki email bo'yicha qidirish..." value="{{ qidiruv }}">
-        <button type="submit" class="btn btn-amber">Qidirish</button>
+        <button type="submit" class="btn btn-accent">Qidirish</button>
         {% if qidiruv %}<a href="{% url 'crm:mijozlar' %}" class="btn btn-outline-secondary">Tozalash</a>{% endif %}
     </form>
 </div>

@@ -1,31 +1,31 @@
-{% extends 'crm/base.html' %}
-{% block title %}CRM Boshqaruv paneli{% endblock %}
+{% extends 'base.html' %}
+{% block title %}Mijozlar paneli{% endblock %}
 {% block content %}
 <div class="page-header d-flex justify-content-between align-items-center">
     <div>
-        <h4 class="mb-1">CRM Boshqaruv paneli</h4>
+        <h4 class="mb-1">Mijozlar paneli</h4>
         <p class="text-muted mb-0">Mijozlar va muloqotlar umumiy ko'rinishi</p>
     </div>
-    <a href="{% url 'crm:mijoz_yaratish' %}" class="btn btn-amber">
+    <a href="{% url 'crm:mijoz_yaratish' %}" class="btn btn-accent">
         <i class="fas fa-plus me-1"></i> Yangi mijoz
     </a>
 </div>
 
 <div class="row g-3 mb-4">
     <div class="col-md-4">
-        <div class="stat-card" style="background: linear-gradient(135deg,#d9831f,#f0a050)">
+        <div class="stat-card" style="background: linear-gradient(135deg,rgba(45,212,191,.18),rgba(139,92,246,.18))">
             <div class="fs-2 fw-bold">{{ jami_mijozlar }}</div>
             <div class="opacity-75">Jami mijozlar</div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="stat-card" style="background: linear-gradient(135deg,#198754,#28a745)">
+        <div class="stat-card" style="background: linear-gradient(135deg,rgba(34,197,94,.18),rgba(45,212,191,.18))">
             <div class="fs-2 fw-bold">{{ jami_muloqotlar }}</div>
             <div class="opacity-75">Jami muloqotlar</div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="stat-card" style="background: linear-gradient(135deg,#0d6efd,#3d8bfd)">
+        <div class="stat-card" style="background: linear-gradient(135deg,rgba(139,92,246,.18),rgba(236,72,153,.18))">
             <div class="fs-2 fw-bold">{{ yangi_mijozlar|length }}</div>
             <div class="opacity-75">Yangi mijozlar (oxirgi 5)</div>
         </div>
@@ -52,7 +52,7 @@
             {% empty %}
             <p class="text-muted">Hali mijoz yo'q</p>
             {% endfor %}
-            <a href="{% url 'crm:mijozlar' %}" class="btn btn-sm btn-amber mt-3 w-100">Barcha mijozlar</a>
+            <a href="{% url 'crm:mijozlar' %}" class="btn btn-sm btn-accent mt-3 w-100">Barcha mijozlar</a>
         </div>
     </div>
     <div class="col-md-7">
